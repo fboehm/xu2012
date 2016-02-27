@@ -1,6 +1,6 @@
 #' Update kminus or kplus vector
 #'
-#' @param k a vector of kminus values
+#' @param k a vector of kminus or kplus values
 #' @param trinary a trinary matrix
 #' @param y data matrix
 #' @param indic indicator of whether to update kminus (-1) or kplus (1)
