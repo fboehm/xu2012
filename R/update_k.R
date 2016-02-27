@@ -12,7 +12,7 @@ update_k <- function(k, indic = 1, trinary, y, shape = 10, scale = 0.02, sd_jump
   tmax <- ncol(trinary)
   # make a proposal kminus
   eps <- rnorm(n = imax, mean = 0, sd = sd_jump)
-  k_pro <- kminus + eps
+  k_pro <- k + eps
   # prior_ratio
   prior_ratio <- MCMCpack::dinvgamma(k_pro, shape = shape, scale = scale) /
     MCMCpack::dinvgamma(k, shape = shape, scale = scale)
@@ -41,7 +41,15 @@ update_k <- function(k, indic = 1, trinary, y, shape = 10, scale = 0.02, sd_jump
   } # end loop over i
   # take sum of entries in each matrix
 
-  loglik_ratio <- sum(loglik_mat_mu_pro) - sum(loglik_mat_mu)
-
+  loglik_ratio <- sum(loglik_mat_pro) - sum(loglik_mat)
+  acc_ratio <- exp(loglik_ratio) * prior_ratio
+  u <- runif(n = 1, min = 0, max = 1)
+  if (u < acc_ratio){
+    out <- k_pro
+  }
+  else {
+    out <- k
+  }
+  return(out)
 }
 

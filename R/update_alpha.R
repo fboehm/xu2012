@@ -1,6 +1,9 @@
 #' Update the alpha vector, the vector of sample-specific random effects
 #'
-#'
+#' @param alpha vector of sample-specific random effects
+#' @param y data matrix
+#' @param trinary trinary indicator matrix
+#' @export
 update_alpha <- function(alpha, y, trinary){
   tmax <- length(alpha)
   imax <- nrow(y)
