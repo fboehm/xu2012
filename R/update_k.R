@@ -20,7 +20,6 @@ update_k <- function(k, indic = 1, trinary, y,
                                      shape = shape,
                                      scale = scale)) -
     log(MCMCpack::dinvgamma(k, shape = shape, scale = scale)))
-  print(logprior_ratio)
   # lik ratio calcs
   loglik_mat_pro <- matrix(data = 0, nrow = imax, ncol = tmax)
   loglik_mat <- matrix(data = 0, nrow = imax, ncol = tmax)
@@ -48,9 +47,7 @@ update_k <- function(k, indic = 1, trinary, y,
   # take sum of entries in each matrix
 
   loglik_ratio <- sum(loglik_mat_pro - loglik_mat)
-  print(loglik_ratio)
   acc_ratio <- exp(loglik_ratio + logprior_ratio)
-  print(acc_ratio)
   u <- runif(n = 1, min = 0, max = 1)
   if (u < acc_ratio){
     out <- k_pro
