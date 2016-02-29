@@ -10,8 +10,8 @@ update_alpha <- function(alpha, y, trinary){
   eps <- rnorm(n = tmax, mean = 0, sd = 0.1) # is 0.1 a reasonable sd??
   eps[tmax] <- - sum(eps[1:(tmax - 1)])
   alpha_prop <- alpha + eps
-  logprior_ratio <- dnorm(alpha_prop, mean = 0, sd = 0.1, log = TRUE) -
-    dnorm(alpha, mean = 0, sd = 0.1, log = TRUE)
+  logprior_ratio <- sum(dnorm(alpha_prop, mean = 0, sd = 0.1, log = TRUE) -
+    dnorm(alpha, mean = 0, sd = 0.1, log = TRUE))
   # to calculate the log lik ratio, we need to
   # consider only those y's for which the corresponding
   # trinary indicator has value zero...

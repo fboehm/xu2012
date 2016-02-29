@@ -7,15 +7,20 @@
 #' @param shape prior shape parameter for inv gamma
 #' @param scale prior scale parameter for inv gamma
 #' @export
-update_k <- function(k, indic = 1, trinary, y, shape = 10, scale = 0.02, sd_jump = 0.1){
+update_k <- function(k, indic = 1, trinary, y,
+                     shape = 10, scale = 0.02,
+                     sd_jump = 0.1){
   imax <- nrow(trinary)
   tmax <- ncol(trinary)
   # make a proposal kminus
   eps <- rnorm(n = imax, mean = 0, sd = sd_jump)
   k_pro <- k + eps
   # prior_ratio
-  prior_ratio <- MCMCpack::dinvgamma(k_pro, shape = shape, scale = scale) /
-    MCMCpack::dinvgamma(k, shape = shape, scale = scale)
+  logprior_ratio <- sum(log(MCMCpack::dinvgamma(k_pro,
+                                     shape = shape,
+                                     scale = scale)) -
+    log(MCMCpack::dinvgamma(k, shape = shape, scale = scale)))
+  print(logprior_ratio)
   # lik ratio calcs
   loglik_mat_pro <- matrix(data = 0, nrow = imax, ncol = tmax)
   loglik_mat <- matrix(data = 0, nrow = imax, ncol = tmax)
@@ -24,7 +29,8 @@ update_k <- function(k, indic = 1, trinary, y, shape = 10, scale = 0.02, sd_jump
   # equal to zero
   for (i in 1:imax){
     for (t in 1:tmax){
-      if (trinary[i, t] == indic & (y[i, t] - mu[i] - alpha[t]) * indic > indic * k[i]){
+      if (trinary[i, t] == 0 & (y[i, t] - mu[i] - alpha[t]) *
+          indic > indic * k[i]){
         # subtract mu[i] and alpha[t]
         loglik_mat[i, t] <- dnorm(y[i, t] - mu[i] - alpha[t],
                                      mean = 0, sd = sigma[i],
@@ -33,7 +39,7 @@ update_k <- function(k, indic = 1, trinary, y, shape = 10, scale = 0.02, sd_jump
                                        mean = 0, sd = sigma[i],
                                        log = TRUE)
       }
-      if (trinary[i, t] == 0 & (y[i, t] - mu[i] - alpha[t]) * indic < indic * k[i]){
+      if (trinary[i, t] == indic & abs(y[i, t] - mu[i] - alpha[t]) < k[i]){
         loglik_mat[i, t] <- - log(k[i])
         loglik_mat_pro[i, t] <- - log(k_pro[i]) # equals log(1 / k_pro[i])
       }
@@ -41,8 +47,10 @@ update_k <- function(k, indic = 1, trinary, y, shape = 10, scale = 0.02, sd_jump
   } # end loop over i
   # take sum of entries in each matrix
 
-  loglik_ratio <- sum(loglik_mat_pro) - sum(loglik_mat)
-  acc_ratio <- exp(loglik_ratio) * prior_ratio
+  loglik_ratio <- sum(loglik_mat_pro - loglik_mat)
+  print(loglik_ratio)
+  acc_ratio <- exp(loglik_ratio + logprior_ratio)
+  print(acc_ratio)
   u <- runif(n = 1, min = 0, max = 1)
   if (u < acc_ratio){
     out <- k_pro
@@ -52,4 +60,3 @@ update_k <- function(k, indic = 1, trinary, y, shape = 10, scale = 0.02, sd_jump
   }
   return(out)
 }
-

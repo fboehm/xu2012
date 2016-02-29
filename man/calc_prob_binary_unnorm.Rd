@@ -4,10 +4,10 @@
 \alias{calc_prob_binary_unnorm}
 \title{Calculate unnormalized probability for binary vector}
 \usage{
-calc_prob_binary_unnorm(binaryvec, betamatrix)
+calc_prob_binary_unnorm(binary_vec, betamatrix)
 }
 \arguments{
-\item{binaryvec}{a vector of zeros and ones}
+\item{binary_vec}{a vector of zeros and ones}
 
 \item{betamatrix}{a matrix of beta coefficients}
 }

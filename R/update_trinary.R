@@ -9,7 +9,7 @@
 #' @export
 
 
-update_trinary <- function(binary, y, pp, mu, sigma, kplus){
+update_trinary <- function(binary, y, pp, mu, sigma, kplus, alpha){
   imax <- nrow(binary)
   tmax <- ncol(binary)
   trinary <- matrix(nrow = imax, ncol = tmax)

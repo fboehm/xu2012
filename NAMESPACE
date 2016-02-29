@@ -3,6 +3,8 @@
 export(calc_prob_binary_unnorm)
 export(int_to_bin)
 export(sample_binary)
+export(sample_trinary)
 export(update_alpha)
 export(update_k)
 export(update_mu)
+export(update_trinary)

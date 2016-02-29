@@ -14,11 +14,11 @@ update_mu <- function(mu, trinary, y, alpha, tau = 1, sd_jump = 0.1){
   mu_pro <- mu + eps
   # eval posterior at each of 1. mu and 2. mu_pro
   ## prior ratio calcs
-  logprior_ratio <- dnorm(mu_pro,
+  logprior_ratio <- sum(dnorm(mu_pro,
                        mean = 0, sd = tau,
                        log = TRUE)
   - dnorm(mu_pro, mean = 0,
-          sd = tau, log = TRUE)
+          sd = tau, log = TRUE))
   ####################################
   ## lik ratio calcs
   loglik_mat_mu <- matrix(data = 0, nrow = imax, ncol = tmax)
