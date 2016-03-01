@@ -48,12 +48,18 @@ update_k <- function(k, indic = 1, trinary, y,
 
   loglik_ratio <- sum(loglik_mat_pro - loglik_mat)
   acc_ratio <- exp(loglik_ratio + logprior_ratio)
-  u <- runif(n = 1, min = 0, max = 1)
-  if (u < acc_ratio){
-    out <- k_pro
-  }
-  else {
+  if (!is.finite(acc_ratio)){
     out <- k
   }
+  if (is.finite(acc_ratio)){
+    u <- runif(n = 1, min = 0, max = 1)
+    if (u < acc_ratio){
+      out <- k_pro
+    }
+    else {
+      out <- k
+    }
+  }
+
   return(out)
 }
