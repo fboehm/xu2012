@@ -17,7 +17,7 @@ update_mu <- function(mu, trinary, y, alpha, tau = 1, sd_jump = 0.1){
   logprior_ratio <- sum(dnorm(mu_pro,
                        mean = 0, sd = tau,
                        log = TRUE)
-  - dnorm(mu_pro, mean = 0,
+  - dnorm(mu, mean = 0,
           sd = tau, log = TRUE))
   ####################################
   ## lik ratio calcs
@@ -39,7 +39,7 @@ update_mu <- function(mu, trinary, y, alpha, tau = 1, sd_jump = 0.1){
     }
   }
   # take sum of entries in each matrix
-  loglik_ratio <- sum(loglik_mat_mu_pro) - sum(loglik_mat_mu)
+  loglik_ratio <- sum(loglik_mat_mu_pro - loglik_mat_mu)
   # add logprior_ratio and loglik_ratio; exponentiate
   acc_ratio <- exp(loglik_ratio + logprior_ratio)
   u <- runif(n = 1, min = 0, max = 1)
