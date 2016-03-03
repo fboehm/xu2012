@@ -1,53 +1,32 @@
 #' Update the mean vector mu (after Xu et al., 2012)
 #'
-#' @param mu a mean vector
+#' @param sigma a standard deviations vector
 #' @param trinary a trinary matrix
 #' @param tau prior sd of mu
-#' @param sd_jump sd of jump distribution
 #'
 #' @export
-update_mu <- function(mu, trinary, y, alpha, tau = 1, sd_jump = 0.1){
+update_mu <- function(trinary, y, alpha, tau = 1){
   imax <- nrow(trinary)
   tmax <- ncol(trinary)
-  # make a proposal beta
-  eps <- rnorm(n = imax, mean = 0, sd = sd_jump)
-  mu_pro <- mu + eps
-  # eval posterior at each of 1. mu and 2. mu_pro
-  ## prior ratio calcs
-  logprior_ratio <- sum(dnorm(mu_pro,
-                       mean = 0, sd = tau,
-                       log = TRUE)
-  - dnorm(mu, mean = 0,
-          sd = tau, log = TRUE))
-  ####################################
-  ## lik ratio calcs
-  loglik_mat_mu <- matrix(data = 0, nrow = imax, ncol = tmax)
-  loglik_mat_mu_pro <- matrix(data = 0, nrow = imax, ncol = tmax)
-  # all entries of the matrices are 0, initially.
-  # we then update those entries that have trinary indicator
-  # equal to zero
+  out <- numeric(length = imax)
   for (i in 1:imax){
-    for (t in 1:tmax){
-      if (trinary[i, t] == 0)
-        # subtract mu[i] and alpha[t]
-        loglik_mat_mu[i, t] <- dnorm(y[i, t] - mu[i] - alpha[t],
-                                        mean = 0, sd = sigma[i],
-                                        log = TRUE)
-      loglik_mat_mu_pro[i, t] <- dnorm(y[i, t] - mu_pro[i] - alpha[t],
-                                           mean = 0, sd = sigma[i],
-                                           log = TRUE)
+    indic <- trinary[i,] == 0
+    post_var <- 1 / (1 / tau + sum(indic) / sigma[i] ^ 2)
+    post_sd <- sqrt(post_var)
+    post_mean <- (sum(y[i, indic] - alpha[indic]) / (sigma[i]) ^ 2) * (post_var)
+    # determine upper and lower bounds of mu
+    mu_lower = max((y[i,] - alpha)[trinary[i,] == -1],(y[i,] - alpha - kplus[i])[trinary[i,] == 1], -Inf)
+    mu_upper = min((y[i,] - alpha + kminus[i])[trinary[i,] == -1],(y[i,] - alpha)[trinary[i,] == 1], Inf)
+    ## note how we define the sets over which we're taking min and max.
+    if(min(mu_lower, mu_upper) > post_mean + 5 * post_sd){
+      out[i] <- min(mu_lower, mu_upper)
     }
-  }
-  # take sum of entries in each matrix
-  loglik_ratio <- sum(loglik_mat_mu_pro - loglik_mat_mu)
-  # add logprior_ratio and loglik_ratio; exponentiate
-  acc_ratio <- exp(loglik_ratio + logprior_ratio)
-  u <- runif(n = 1, min = 0, max = 1)
-  if (u < acc_ratio){
-    out <- mu_pro
-  }
-  else {
-    out <- mu
+    else if(max(mu_lower, mu_upper) < post_mean - 5 * post_sd){
+      out[i] <- max(mu_lower, mu_upper)
+    }
+    else{
+      out[i] = mc2d::rtrunc("rnorm", n = 1, linf = min(mu_lower, mu_upper), lsup=max(mu_lower, mu_upper), mean = post_mean, sd = post_sd)
+    }
   }
   return(out)
 }
