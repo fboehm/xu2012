@@ -15,9 +15,10 @@ update_mu <- function(trinary, y, alpha, tau = 1){
     post_sd <- sqrt(post_var)
     post_mean <- (sum(y[i, indic] - alpha[indic]) / (sigma[i]) ^ 2) * (post_var)
     # determine upper and lower bounds of mu
-    mu_lower = max((y[i,] - alpha)[trinary[i,] == -1],(y[i,] - alpha - kplus[i])[trinary[i,] == 1], -Inf)
-    mu_upper = min((y[i,] - alpha + kminus[i])[trinary[i,] == -1],(y[i,] - alpha)[trinary[i,] == 1], Inf)
+    mu_lower <- max((y[i,] - alpha)[trinary[i,] == -1], (y[i,] - alpha - kplus[i])[trinary[i,] == 1], -Inf)
+    mu_upper <- min((y[i,] - alpha + kminus[i])[trinary[i,] == -1], (y[i,] - alpha)[trinary[i,] == 1], Inf)
     ## note how we define the sets over which we're taking min and max.
+    ## note choice to use 5 sd's is arbitrary
     if(min(mu_lower, mu_upper) > post_mean + 5 * post_sd){
       out[i] <- min(mu_lower, mu_upper)
     }
