@@ -16,7 +16,7 @@ update_sigma <- function(y, trinary, alpha, mu, shape = 2, rate = 0.1){
     # determine posterior shape parameter value
     shape_post <- shape + sum(ind) / 2
     # determine posterior rate parameter value
-    rate_post <- rate + sum(((y[i, ] - alpha - mu[i])[trinary == 0])^2) / 2
+    rate_post <- rate + sum(((y[i, ] - alpha - mu[i])[ind])^2) / 2
     foo <- rgamma(n = 1, shape = shape_post, rate = rate_post)
     out[i] <- sqrt(1 / foo)
   }
