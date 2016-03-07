@@ -31,7 +31,6 @@ update_alpha <- function(alpha, y, trinary, mu, sigma, kminus, kplus, tau = 1){
           (alpha[t] < y[i, t] - mu[i] + kminus[i])
       }
     }
-    lik <- prod(lik)
 
 
   }
